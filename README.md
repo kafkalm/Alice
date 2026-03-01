@@ -11,9 +11,12 @@ Alice is a macOS-first personal assistant focused on helping users quickly under
   - sentence splitting
   - heuristic SVO parsing
   - local-first parse orchestration with optional cloud fallback
-  - event logging contracts and local JSONL logger
+  - AX-first text capture with OCR fallback hook
+  - capture-runner orchestration and event logging
 - `AliceMac` (SwiftUI menu bar app)
-  - MVP UI for paragraph input + S/V/O result output
+  - global shortcut listener (`Cmd+Shift+A`)
+  - focused-text capture + parse trigger
+  - menu panel result rendering
 
 ## Development
 - Build: `swift build`
