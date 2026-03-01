@@ -1,27 +1,25 @@
-# Repo Template: Codex + GitHub + Notion Ops
+# Alice
 
-This template bootstraps a new repository with:
+Alice is a macOS-first personal assistant focused on helping users quickly understand English sentences by extracting subject/verb/object structure.
 
-- Standard issue and PR templates
-- GitHub Actions for Notion sync and daily reconcile
-- Reusable Notion sync scripts and tests
-- Setup guide under `docs/project-ops/`
-
-## After Creating a Repo from This Template
-
-1. Store Keychain entries once on macOS:
-   - `security add-generic-password -a "$USER" -s "codex/notion_token" -w "<NOTION_TOKEN>" -U`
-2. Run onboarding script (auto-creates Task Mirror DB, sets secrets, bootstraps labels, triggers reconcile):
-   - `./scripts/onboard-repo.sh <owner/repo>`
-   - optional override: `./scripts/onboard-repo.sh <owner/repo> <task_db_id> <portfolio_db_id>`
-   - script uses shared Task DB by default and upserts one row in Portfolio DB (`Project Key = owner/repo`)
-
-## Notes
-
-- GitHub template repositories copy files only.
-- Secrets, labels, environments, branch rules, and Actions history are not copied.
-
-## Alice Product Docs
-
+## Product docs
 - Product design (V1-V3): `docs/product/alice-product-design-v1-v3.md`
 - Quick SVO Parse PRD: `docs/prd/quick-svo-parse-prd.md`
+
+## Current code modules
+- `AliceCore` (Swift library)
+  - sentence splitting
+  - heuristic SVO parsing
+  - local-first parse orchestration with optional cloud fallback
+  - event logging contracts and local JSONL logger
+- `AliceMac` (SwiftUI menu bar app)
+  - MVP UI for paragraph input + S/V/O result output
+
+## Development
+- Build: `swift build`
+- Test: `swift test`
+- Run app: `swift run AliceMac`
+- MVP implementation guide: `docs/development/quick-svo-mvp-setup.md`
+
+## Legacy template docs
+This repository started from the Codex + GitHub + Notion ops template. See `docs/project-ops/notion-github-codex-ops.md` for operational setup details.
