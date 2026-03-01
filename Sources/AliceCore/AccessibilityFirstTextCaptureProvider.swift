@@ -18,7 +18,7 @@ public struct AccessibilityFirstTextCaptureProvider: TextCaptureProviding {
     public init() {
         self.init(
             axReader: AXFocusedTextReader(),
-            ocrReader: NoopOCRTextReader(),
+            ocrReader: VisionOCRTextReader(),
             languageHintProvider: NaturalLanguageHintProvider()
         )
     }

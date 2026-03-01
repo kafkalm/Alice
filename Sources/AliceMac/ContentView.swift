@@ -12,10 +12,14 @@ final class AliceMenuBarViewModel: ObservableObject {
 
     private let parserService: QuickSVOService
     private let captureRunner: QuickSVOCaptureRunner
+    private let floatingPresenter: FloatingResultPresenting
     private var shortcutMonitor: GlobalShortcutMonitor?
     private var hasStartedShortcutMonitoring = false
 
-    init(captureProvider: TextCaptureProviding = AccessibilityFirstTextCaptureProvider()) {
+    init(
+        captureProvider: TextCaptureProviding = AccessibilityFirstTextCaptureProvider(),
+        floatingPresenter: FloatingResultPresenting = FloatingResultWindowManager()
+    ) {
         let localParser = HeuristicSVOParser()
         self.parserService = QuickSVOService(
             sentenceSplitter: NLTokenizerSentenceSplitter(),
@@ -25,6 +29,7 @@ final class AliceMenuBarViewModel: ObservableObject {
             settings: QuickSVOSettings(cloudFallbackEnabled: true, confidenceThreshold: 0.55)
         )
         self.captureRunner = QuickSVOCaptureRunner(captureProvider: captureProvider, paragraphParser: parserService)
+        self.floatingPresenter = floatingPresenter
 
         self.inputText = "The manager approved the revised budget yesterday. She sent the summary to the team."
     }
@@ -43,7 +48,15 @@ final class AliceMenuBarViewModel: ObservableObject {
     func parseFromInputText() {
         do {
             errorMessage = nil
-            parseResult = try parserService.parseParagraph(text: inputText, sourceApp: "AliceMenuBar")
+            let result = try parserService.parseParagraph(text: inputText, sourceApp: "AliceMenuBar")
+            parseResult = result
+
+            floatingPresenter.present(
+                result: result,
+                captureMethod: lastCaptureMethod,
+                sourceApp: "AliceMenuBar",
+                at: cursorPoint()
+            )
         } catch {
             parseResult = nil
             errorMessage = error.localizedDescription
@@ -64,6 +77,13 @@ final class AliceMenuBarViewModel: ObservableObject {
             parseResult = result.parse
             lastCaptureMethod = result.capture.method
             lastLanguageHint = result.capture.languageHint
+
+            floatingPresenter.present(
+                result: result.parse,
+                captureMethod: result.capture.method,
+                sourceApp: request.sourceApp,
+                at: request.cursorPoint
+            )
         } catch {
             parseResult = nil
             errorMessage = error.localizedDescription
@@ -84,7 +104,7 @@ struct ContentView: View {
             Text("Quick SVO Parse")
                 .font(.headline)
 
-            Text("Hover text in any app and press Command + Shift + A, or manually parse below.")
+            Text("Hover text in any app and press Cmd+Shift+A, or manually parse below.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
@@ -97,7 +117,7 @@ struct ContentView: View {
                 )
 
             HStack(spacing: 8) {
-                Button("Capture + Parse (⌘⇧A)") {
+                Button("Capture + Parse (Cmd+Shift+A)") {
                     viewModel.captureAndParseNow()
                 }
                 .buttonStyle(.borderedProminent)

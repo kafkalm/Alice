@@ -1,3 +1,4 @@
+import CoreGraphics
 import Foundation
 
 public protocol TextCaptureProviding {
@@ -10,6 +11,14 @@ public protocol AccessibilityTextReading {
 
 public protocol OCRTextReading {
     func readText(around point: CursorPoint) -> CapturedText?
+}
+
+public protocol ScreenRegionCapturing {
+    func captureImage(in rect: CGRect) -> CGImage?
+}
+
+public protocol OCRRecognizing {
+    func recognizeText(in image: CGImage) -> String?
 }
 
 public protocol LanguageHintProviding {

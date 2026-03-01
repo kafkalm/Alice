@@ -95,12 +95,3 @@ public struct AXFocusedTextReader: AccessibilityTextReading {
         return size
     }
 }
-
-public struct NoopOCRTextReader: OCRTextReading {
-    public init() {}
-
-    public func readText(around point: CursorPoint) -> CapturedText? {
-        _ = point
-        return nil
-    }
-}
