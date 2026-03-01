@@ -36,7 +36,7 @@ The app launches as a menu bar utility named **Alice**.
   - local-first fallback orchestration (`QuickSVOService`)
   - capture-runner orchestration (`QuickSVOCaptureRunner`)
   - AX-first capture provider (`AccessibilityFirstTextCaptureProvider`)
-  - OCR fallback (`VisionOCRTextReader` with Quartz screen capture + Vision recognition)
+  - OCR fallback (`VisionOCRTextReader` with ScreenCaptureKit screenshot + Vision recognition)
   - language hint detection (`NaturalLanguageHintProvider`)
   - event logging (`LocalEventLogger`)
 - `AliceMac`:
@@ -53,12 +53,10 @@ The app launches as a menu bar utility named **Alice**.
   - OCR reader behavior with injected capture/recognition stubs
 
 ## Known limitations
-- OCR capture uses `CGWindowListCreateImage` (deprecated in macOS 14+); migration to ScreenCaptureKit is recommended.
 - No permission onboarding UI yet; permissions must be granted from System Settings.
 - Floating card is read-only and auto-dismisses after a short timeout.
 
 ## Next implementation steps
-- migrate OCR capture to ScreenCaptureKit
 - add explicit permission diagnostics and onboarding flow
 - add close/pin actions to floating result card
 - improve parser accuracy for subordinate clauses and passive voice

@@ -1,5 +1,6 @@
 import CoreGraphics
 import Foundation
+import ScreenCaptureKit
 import Vision
 
 public struct VisionOCRTextReader: OCRTextReading {
@@ -19,7 +20,7 @@ public struct VisionOCRTextReader: OCRTextReading {
 
     public init(
         captureSize: CGSize = CGSize(width: 820, height: 260),
-        regionCapturer: ScreenRegionCapturing = QuartzScreenRegionCapturer(),
+        regionCapturer: ScreenRegionCapturing = ScreenCaptureKitRegionCapturer(),
         recognizer: OCRRecognizing = VisionOCRRecognizer()
     ) {
         self.init(
@@ -65,16 +66,108 @@ public struct VisionOCRTextReader: OCRTextReading {
     }
 }
 
-public struct QuartzScreenRegionCapturer: ScreenRegionCapturing {
-    public init() {}
+public final class ScreenCaptureKitRegionCapturer: ScreenRegionCapturing {
+    public typealias AsyncCapture = @Sendable (CGRect) async throws -> CGImage?
+
+    private let timeoutSeconds: TimeInterval
+    private let asyncCapture: AsyncCapture
+
+    public init(
+        timeoutSeconds: TimeInterval = 1.5,
+        asyncCapture: AsyncCapture? = nil
+    ) {
+        self.timeoutSeconds = timeoutSeconds
+        self.asyncCapture = asyncCapture ?? Self.captureUsingScreenCaptureKit
+    }
 
     public func captureImage(in rect: CGRect) -> CGImage? {
-        CGWindowListCreateImage(
-            rect,
-            .optionOnScreenOnly,
-            kCGNullWindowID,
-            [.bestResolution, .boundsIgnoreFraming]
+        let semaphore = DispatchSemaphore(value: 0)
+        let box = CaptureResultBox()
+        let asyncCapture = self.asyncCapture
+
+        Task.detached {
+            do {
+                box.set(try await asyncCapture(rect))
+            } catch {
+                box.set(nil)
+            }
+            semaphore.signal()
+        }
+
+        let timeout = DispatchTime.now() + timeoutSeconds
+        guard semaphore.wait(timeout: timeout) == .success else {
+            return nil
+        }
+
+        return box.get()
+    }
+
+    static func captureUsingScreenCaptureKit(in rect: CGRect) async throws -> CGImage? {
+        let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
+        guard let display = pickDisplay(for: rect, displays: content.displays) else {
+            return nil
+        }
+
+        let displayFrame = CGRect(x: display.frame.origin.x, y: display.frame.origin.y, width: display.frame.width, height: display.frame.height)
+        let sourceRect = normalize(rect: rect, within: displayFrame)
+        guard sourceRect.width > 2, sourceRect.height > 2 else {
+            return nil
+        }
+
+        let filter = SCContentFilter(display: display, excludingWindows: [])
+        let config = SCStreamConfiguration()
+        config.width = Int(sourceRect.width.rounded(.up))
+        config.height = Int(sourceRect.height.rounded(.up))
+        config.sourceRect = sourceRect
+
+        return try await SCScreenshotManager.captureImage(contentFilter: filter, configuration: config)
+    }
+
+    private static func pickDisplay(for rect: CGRect, displays: [SCDisplay]) -> SCDisplay? {
+        let center = CGPoint(x: rect.midX, y: rect.midY)
+
+        if let exact = displays.first(where: { display in
+            let frame = CGRect(x: display.frame.origin.x, y: display.frame.origin.y, width: display.frame.width, height: display.frame.height)
+            return frame.contains(center)
+        }) {
+            return exact
+        }
+
+        return displays.first
+    }
+
+    private static func normalize(rect: CGRect, within displayFrame: CGRect) -> CGRect {
+        let intersection = rect.intersection(displayFrame)
+        guard !intersection.isNull, !intersection.isEmpty else {
+            return .null
+        }
+
+        let local = CGRect(
+            x: intersection.origin.x - displayFrame.origin.x,
+            y: intersection.origin.y - displayFrame.origin.y,
+            width: intersection.size.width,
+            height: intersection.size.height
         )
+
+        return local.integral
+    }
+}
+
+private final class CaptureResultBox: @unchecked Sendable {
+    private var image: CGImage?
+    private let lock = NSLock()
+
+    func set(_ image: CGImage?) {
+        lock.lock()
+        self.image = image
+        lock.unlock()
+    }
+
+    func get() -> CGImage? {
+        lock.lock()
+        let image = self.image
+        lock.unlock()
+        return image
     }
 }
 
