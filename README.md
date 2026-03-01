@@ -20,3 +20,8 @@ This template bootstraps a new repository with:
 
 - GitHub template repositories copy files only.
 - Secrets, labels, environments, branch rules, and Actions history are not copied.
+
+## Alice Product Docs
+
+- Product design (V1-V3): `docs/product/alice-product-design-v1-v3.md`
+- Quick SVO Parse PRD: `docs/prd/quick-svo-parse-prd.md`
