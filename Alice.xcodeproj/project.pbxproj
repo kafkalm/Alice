@@ -1,0 +1,479 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0DFA3F536333A9DE449E13B2 /* NLTokenizerSentenceSplitterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8718903F6955616F3A0EA9AF /* NLTokenizerSentenceSplitterTests.swift */; };
+		213B83D54AC2FDC536B91795 /* AliceMenuBarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0F32B1044601C995D84EC0D /* AliceMenuBarApp.swift */; };
+		2C218E8182845F47925400E3 /* ScreenCaptureKitRegionCapturerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F122F6F23E93264946748BC3 /* ScreenCaptureKitRegionCapturerTests.swift */; };
+		3153EFCBC0FEE04B41C998B7 /* QuickSVOCaptureRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F163715343517F4CD02BA1 /* QuickSVOCaptureRunnerTests.swift */; };
+		58BD30E3D841C881DA361DDB /* AliceCore in Frameworks */ = {isa = PBXBuildFile; productRef = A9EBD883C6ABCD132F20FC05 /* AliceCore */; };
+		59F37EFE4650BD452746BA1A /* AccessibilityFirstTextCaptureProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493B14E0B09175E14CBF0231 /* AccessibilityFirstTextCaptureProviderTests.swift */; };
+		6BB012CD8BDD340A55649A31 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FA019D210A18395502399F /* ContentView.swift */; };
+		A15C26982CECD7ACE5E23DCE /* FloatingResultWindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9482BB11CA0BAC96278E13E0 /* FloatingResultWindowManager.swift */; };
+		A6C5ED6A62901C1EAFB51137 /* GlobalShortcutMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F9C3D72CA2E374FF439490 /* GlobalShortcutMonitor.swift */; };
+		B9D309D829A273CABF73050A /* QuickSVOServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA10160AD431DAB2EDFF7E33 /* QuickSVOServiceTests.swift */; };
+		C836A4937D03328354D40966 /* VisionOCRTextReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C5F5870AF84C3BD8E8D11D /* VisionOCRTextReaderTests.swift */; };
+		D8AD113CE50559E6600FEF3B /* AliceCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7C5491A0F19093C24CC281AD /* AliceCore */; };
+		FD44A0FA221550A8E48B6D6D /* HeuristicSVOParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92138ADC1D972442BF7904B3 /* HeuristicSVOParserTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		18C5F5870AF84C3BD8E8D11D /* VisionOCRTextReaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionOCRTextReaderTests.swift; sourceTree = "<group>"; };
+		27FA019D210A18395502399F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		493B14E0B09175E14CBF0231 /* AccessibilityFirstTextCaptureProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityFirstTextCaptureProviderTests.swift; sourceTree = "<group>"; };
+		62D8CF6D0E26705FA7A1CE95 /* wt-6-add-xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "wt-6-add-xcodeproj"; path = .; sourceTree = SOURCE_ROOT; };
+		8718903F6955616F3A0EA9AF /* NLTokenizerSentenceSplitterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NLTokenizerSentenceSplitterTests.swift; sourceTree = "<group>"; };
+		91F0279C5A8F4B6E6451D030 /* AliceDesktop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AliceDesktop.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		92138ADC1D972442BF7904B3 /* HeuristicSVOParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeuristicSVOParserTests.swift; sourceTree = "<group>"; };
+		9482BB11CA0BAC96278E13E0 /* FloatingResultWindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingResultWindowManager.swift; sourceTree = "<group>"; };
+		A0F163715343517F4CD02BA1 /* QuickSVOCaptureRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickSVOCaptureRunnerTests.swift; sourceTree = "<group>"; };
+		B0F9C3D72CA2E374FF439490 /* GlobalShortcutMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalShortcutMonitor.swift; sourceTree = "<group>"; };
+		BA10160AD431DAB2EDFF7E33 /* QuickSVOServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickSVOServiceTests.swift; sourceTree = "<group>"; };
+		C5DA806CCF71EA84B246E4A5 /* AliceCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AliceCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F0F32B1044601C995D84EC0D /* AliceMenuBarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceMenuBarApp.swift; sourceTree = "<group>"; };
+		F122F6F23E93264946748BC3 /* ScreenCaptureKitRegionCapturerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCaptureKitRegionCapturerTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9C7EC3D661FD9AF57F7F6E9D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				58BD30E3D841C881DA361DDB /* AliceCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A826450FD4B4C7D9D12E9FD1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D8AD113CE50559E6600FEF3B /* AliceCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		06434B95FA6837326E21A431 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				62D8CF6D0E26705FA7A1CE95 /* wt-6-add-xcodeproj */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		31378A06791DEAD09456C821 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				51D1E73E341F59DA0D3C1F9B /* AliceCoreTests */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		51D1E73E341F59DA0D3C1F9B /* AliceCoreTests */ = {
+			isa = PBXGroup;
+			children = (
+				493B14E0B09175E14CBF0231 /* AccessibilityFirstTextCaptureProviderTests.swift */,
+				92138ADC1D972442BF7904B3 /* HeuristicSVOParserTests.swift */,
+				8718903F6955616F3A0EA9AF /* NLTokenizerSentenceSplitterTests.swift */,
+				A0F163715343517F4CD02BA1 /* QuickSVOCaptureRunnerTests.swift */,
+				BA10160AD431DAB2EDFF7E33 /* QuickSVOServiceTests.swift */,
+				F122F6F23E93264946748BC3 /* ScreenCaptureKitRegionCapturerTests.swift */,
+				18C5F5870AF84C3BD8E8D11D /* VisionOCRTextReaderTests.swift */,
+			);
+			path = AliceCoreTests;
+			sourceTree = "<group>";
+		};
+		8CBDA7A3573EE3B763A4C2F1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C5DA806CCF71EA84B246E4A5 /* AliceCoreTests.xctest */,
+				91F0279C5A8F4B6E6451D030 /* AliceDesktop.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B6DD0AC37E84F77DF927F294 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				C06AFEF45D32EB40468E9909 /* AliceMac */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		C06AFEF45D32EB40468E9909 /* AliceMac */ = {
+			isa = PBXGroup;
+			children = (
+				F0F32B1044601C995D84EC0D /* AliceMenuBarApp.swift */,
+				27FA019D210A18395502399F /* ContentView.swift */,
+				9482BB11CA0BAC96278E13E0 /* FloatingResultWindowManager.swift */,
+				B0F9C3D72CA2E374FF439490 /* GlobalShortcutMonitor.swift */,
+			);
+			path = AliceMac;
+			sourceTree = "<group>";
+		};
+		D5875F0C6F7B9577914A9A3E = {
+			isa = PBXGroup;
+			children = (
+				06434B95FA6837326E21A431 /* Packages */,
+				B6DD0AC37E84F77DF927F294 /* Sources */,
+				31378A06791DEAD09456C821 /* Tests */,
+				8CBDA7A3573EE3B763A4C2F1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0665CAF8742BA72315E19E1F /* AliceCoreTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9EABF782EC7075EA30C7C09C /* Build configuration list for PBXNativeTarget "AliceCoreTests" */;
+			buildPhases = (
+				67ACE2A3AA4637EC722DDDFB /* Sources */,
+				A826450FD4B4C7D9D12E9FD1 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AliceCoreTests;
+			packageProductDependencies = (
+				7C5491A0F19093C24CC281AD /* AliceCore */,
+			);
+			productName = AliceCoreTests;
+			productReference = C5DA806CCF71EA84B246E4A5 /* AliceCoreTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		E621B4B10479A92FCC66F222 /* AliceDesktop */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F13A7A7067636C032F199068 /* Build configuration list for PBXNativeTarget "AliceDesktop" */;
+			buildPhases = (
+				D66B7704E328D2D330CDE60F /* Sources */,
+				9C7EC3D661FD9AF57F7F6E9D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AliceDesktop;
+			packageProductDependencies = (
+				A9EBD883C6ABCD132F20FC05 /* AliceCore */,
+			);
+			productName = AliceDesktop;
+			productReference = 91F0279C5A8F4B6E6451D030 /* AliceDesktop.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		19701A1C1A3AE07EFB0D8E2D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					E621B4B10479A92FCC66F222 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 2033B79AF7502BEA40E8FFB4 /* Build configuration list for PBXProject "Alice" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = D5875F0C6F7B9577914A9A3E;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1CA2C7DC0B933FD075C5BB4C /* XCLocalSwiftPackageReference "." */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0665CAF8742BA72315E19E1F /* AliceCoreTests */,
+				E621B4B10479A92FCC66F222 /* AliceDesktop */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		67ACE2A3AA4637EC722DDDFB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				59F37EFE4650BD452746BA1A /* AccessibilityFirstTextCaptureProviderTests.swift in Sources */,
+				FD44A0FA221550A8E48B6D6D /* HeuristicSVOParserTests.swift in Sources */,
+				0DFA3F536333A9DE449E13B2 /* NLTokenizerSentenceSplitterTests.swift in Sources */,
+				3153EFCBC0FEE04B41C998B7 /* QuickSVOCaptureRunnerTests.swift in Sources */,
+				B9D309D829A273CABF73050A /* QuickSVOServiceTests.swift in Sources */,
+				2C218E8182845F47925400E3 /* ScreenCaptureKitRegionCapturerTests.swift in Sources */,
+				C836A4937D03328354D40966 /* VisionOCRTextReaderTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D66B7704E328D2D330CDE60F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				213B83D54AC2FDC536B91795 /* AliceMenuBarApp.swift in Sources */,
+				6BB012CD8BDD340A55649A31 /* ContentView.swift in Sources */,
+				A15C26982CECD7ACE5E23DCE /* FloatingResultWindowManager.swift in Sources */,
+				A6C5ED6A62901C1EAFB51137 /* GlobalShortcutMonitor.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2033CB2A157965EC35B3049D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		6E6EDA828C511848E1D0ED71 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kafkalm.alice.mac;
+				PRODUCT_NAME = AliceMac;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		735EE18AA9E4EE6A6D0964CB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		7A873457C3094D2A916EBC96 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "";
+			};
+			name = Release;
+		};
+		A28E4313020A573B796A0E59 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kafkalm.alice.mac;
+				PRODUCT_NAME = AliceMac;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		D365C0A3B1E554E5AE641E90 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2033B79AF7502BEA40E8FFB4 /* Build configuration list for PBXProject "Alice" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				735EE18AA9E4EE6A6D0964CB /* Debug */,
+				2033CB2A157965EC35B3049D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9EABF782EC7075EA30C7C09C /* Build configuration list for PBXNativeTarget "AliceCoreTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D365C0A3B1E554E5AE641E90 /* Debug */,
+				7A873457C3094D2A916EBC96 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F13A7A7067636C032F199068 /* Build configuration list for PBXNativeTarget "AliceDesktop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A28E4313020A573B796A0E59 /* Debug */,
+				6E6EDA828C511848E1D0ED71 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		1CA2C7DC0B933FD075C5BB4C /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7C5491A0F19093C24CC281AD /* AliceCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AliceCore;
+		};
+		A9EBD883C6ABCD132F20FC05 /* AliceCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AliceCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 19701A1C1A3AE07EFB0D8E2D /* Project object */;
+}

@@ -18,6 +18,12 @@ Alice is a macOS-first personal assistant focused on helping users quickly under
   - focused-text capture + parse trigger
   - menu panel result rendering and floating near-cursor card
 
+## Xcode Run
+- Open `Alice.xcodeproj` in Xcode.
+- Select scheme `AliceDesktop` and destination `My Mac`.
+- Press `Cmd+R` to run.
+- If project files need regeneration after structure changes: `xcodegen generate`.
+
 ## Development
 - Build: `swift build`
 - Test: `swift test`
