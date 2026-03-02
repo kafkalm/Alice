@@ -24,6 +24,16 @@ public struct RectBounds: Codable, Equatable, Sendable {
     }
 }
 
+public struct CapturedText: Codable, Equatable, Sendable {
+    public let text: String
+    public let bounds: RectBounds?
+
+    public init(text: String, bounds: RectBounds?) {
+        self.text = text
+        self.bounds = bounds
+    }
+}
+
 public enum CaptureMethod: String, Codable, Equatable, Sendable {
     case ax
     case ocr

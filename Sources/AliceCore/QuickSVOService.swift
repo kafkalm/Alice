@@ -114,3 +114,5 @@ public final class QuickSVOService {
             result.verb.isEmpty
     }
 }
+
+extension QuickSVOService: ParagraphParsing {}
