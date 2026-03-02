@@ -1,0 +1,50 @@
+name: Alice
+options:
+  createIntermediateGroups: true
+  deploymentTarget:
+    macOS: "14.0"
+packages:
+  AlicePackage:
+    path: .
+targets:
+  AliceDesktop:
+    type: application
+    platform: macOS
+    sources:
+      - Sources/AliceMac
+    dependencies:
+      - package: AlicePackage
+        product: AliceCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kafkalm.alice.mac
+        PRODUCT_NAME: AliceMac
+        SWIFT_VERSION: 6.0
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGN_STYLE: Automatic
+        MACOSX_DEPLOYMENT_TARGET: 14.0
+  AliceCoreTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - Tests/AliceCoreTests
+    dependencies:
+      - package: AlicePackage
+        product: AliceCore
+    settings:
+      base:
+        SWIFT_VERSION: 6.0
+        GENERATE_INFOPLIST_FILE: YES
+        BUNDLE_LOADER: ""
+        TEST_HOST: ""
+schemes:
+  AliceDesktop:
+    build:
+      targets:
+        AliceDesktop: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - AliceCoreTests
