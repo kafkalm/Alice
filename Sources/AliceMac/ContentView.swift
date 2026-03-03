@@ -163,6 +163,13 @@ final class AliceMenuBarViewModel: ObservableObject {
     }
 
     private func triggerAccessibilityPermissionPrompt(reason: String) {
+        let alreadyTrusted = AXIsProcessTrusted()
+        if alreadyTrusted {
+            isAccessibilityTrusted = true
+            diagnosticsLogger.log("requestAccessibilityPermission skipped reason=\(reason) alreadyTrusted=true")
+            return
+        }
+
         let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
         let trusted = AXIsProcessTrustedWithOptions(options)
         diagnosticsLogger.log("requestAccessibilityPermission reason=\(reason) trustedNow=\(trusted)")
