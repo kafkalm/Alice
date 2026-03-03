@@ -1,6 +1,48 @@
 import AliceCore
 import AppKit
+import ApplicationServices
 import SwiftUI
+
+@MainActor
+final class AliceDiagnosticsLogger {
+    static let shared = AliceDiagnosticsLogger()
+
+    let logFilePath: String
+
+    private let logURL: URL
+    private let formatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
+
+    private init() {
+        let logsDirectory = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Library/Logs/Alice", isDirectory: true)
+        self.logURL = logsDirectory.appendingPathComponent("diagnostics.log", isDirectory: false)
+        self.logFilePath = logURL.path
+
+        try? FileManager.default.createDirectory(at: logsDirectory, withIntermediateDirectories: true)
+        if !FileManager.default.fileExists(atPath: logURL.path) {
+            FileManager.default.createFile(atPath: logURL.path, contents: nil)
+        }
+    }
+
+    func log(_ message: String) {
+        let line = "\(formatter.string(from: Date())) \(message)\n"
+        guard let data = line.data(using: .utf8) else { return }
+        if let handle = try? FileHandle(forWritingTo: logURL) {
+            defer { try? handle.close() }
+            do {
+                try handle.seekToEnd()
+                try handle.write(contentsOf: data)
+            } catch {
+                print("AliceDiagnosticsLogger write failed: \(error.localizedDescription)")
+            }
+        }
+        print("[AliceDiag] \(message)")
+    }
+}
 
 @MainActor
 final class AliceMenuBarViewModel: ObservableObject {
@@ -10,11 +52,17 @@ final class AliceMenuBarViewModel: ObservableObject {
     @Published var lastCaptureMethod: CaptureMethod?
     @Published var lastLanguageHint: LanguageHint?
     @Published var shortcutConfiguration: ShortcutConfiguration
+    @Published var isAccessibilityTrusted: Bool
+    @Published var isShortcutMonitorRunning: Bool = false
+    @Published var lastShortcutMatchAt: Date?
+    @Published var lastMonitorEvent: String = "No shortcut events yet"
+    @Published var diagnosticsLogPath: String
 
     private let parserService: QuickSVOService
     private let captureRunner: QuickSVOCaptureRunner
     private let floatingPresenter: FloatingResultPresenting
     private let shortcutSettingsStore: ShortcutSettingsStore
+    private let diagnosticsLogger: AliceDiagnosticsLogger
     private var shortcutMonitor: GlobalShortcutMonitor?
     private var hasStartedShortcutMonitoring = false
 
@@ -25,6 +73,9 @@ final class AliceMenuBarViewModel: ObservableObject {
     ) {
         self.shortcutSettingsStore = shortcutSettingsStore
         self.shortcutConfiguration = shortcutSettingsStore.load()
+        self.diagnosticsLogger = .shared
+        self.diagnosticsLogPath = diagnosticsLogger.logFilePath
+        self.isAccessibilityTrusted = AXIsProcessTrusted()
 
         let localParser = HeuristicSVOParser()
         self.parserService = QuickSVOService(
@@ -38,21 +89,83 @@ final class AliceMenuBarViewModel: ObservableObject {
         self.floatingPresenter = floatingPresenter
 
         self.inputText = "The manager approved the revised budget yesterday. She sent the summary to the team."
+        diagnosticsLogger.log("app initialized shortcut=\(shortcutConfiguration.displayString) accessibilityTrusted=\(isAccessibilityTrusted)")
     }
 
     func startShortcutMonitoringIfNeeded() {
-        guard !hasStartedShortcutMonitoring else { return }
+        guard !hasStartedShortcutMonitoring else {
+            diagnosticsLogger.log("startShortcutMonitoringIfNeeded ignored: already started")
+            return
+        }
         hasStartedShortcutMonitoring = true
+        refreshAccessibilityStatus()
 
         let currentShortcut = shortcutConfiguration.normalized()
         let monitor = GlobalShortcutMonitor(
             keyCode: currentShortcut.key.keyCode,
             modifiers: currentShortcut.modifierFlags
         ) { [weak self] in
-            self?.captureAndParseNow()
+            self?.recordShortcutMatch()
+            self?.captureAndParseNow(trigger: "shortcut")
+        } diagnostics: { [weak self] message in
+            Task { @MainActor in
+                self?.handleMonitorDiagnostics(message)
+            }
+        }
+        diagnosticsLogger.log("starting shortcut monitor shortcut=\(currentShortcut.displayString)")
+        if !isAccessibilityTrusted {
+            diagnosticsLogger.log("accessibility permission missing; global shortcut may not fire outside app")
+            if errorMessage == nil {
+                errorMessage = "Global shortcut may not work in other apps until Accessibility permission is granted."
+            }
         }
         monitor.start()
         self.shortcutMonitor = monitor
+        isShortcutMonitorRunning = true
+    }
+
+    func refreshAccessibilityStatus() {
+        isAccessibilityTrusted = AXIsProcessTrusted()
+        diagnosticsLogger.log("refreshAccessibilityStatus accessibilityTrusted=\(isAccessibilityTrusted)")
+    }
+
+    func openAccessibilitySettings() {
+        guard let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") else {
+            diagnosticsLogger.log("failed to construct accessibility settings URL")
+            return
+        }
+        diagnosticsLogger.log("openAccessibilitySettings requested")
+        NSWorkspace.shared.open(url)
+    }
+
+    func copyDiagnosticsSummaryToPasteboard() {
+        let summary = """
+        shortcut=\(shortcutConfiguration.displayString)
+        accessibilityTrusted=\(isAccessibilityTrusted)
+        monitorRunning=\(isShortcutMonitorRunning)
+        lastShortcutMatch=\(display(lastShortcutMatchAt))
+        lastMonitorEvent=\(lastMonitorEvent)
+        logFile=\(diagnosticsLogPath)
+        """
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(summary, forType: .string)
+        diagnosticsLogger.log("copied diagnostics summary to pasteboard")
+    }
+
+    func logSnapshotForFeedback() {
+        diagnosticsLogger.log(
+            "snapshot shortcut=\(shortcutConfiguration.displayString) " +
+            "accessibilityTrusted=\(isAccessibilityTrusted) monitorRunning=\(isShortcutMonitorRunning) " +
+            "lastShortcutMatch=\(display(lastShortcutMatchAt)) lastMonitorEvent=\(lastMonitorEvent)"
+        )
+    }
+
+    func markMainPanelAppeared() {
+        diagnosticsLogger.log("main panel appeared")
+    }
+
+    func markSettingsAppeared() {
+        diagnosticsLogger.log("settings window appeared")
     }
 
     func updateShortcutKey(_ key: ShortcutKey) {
@@ -86,6 +199,7 @@ final class AliceMenuBarViewModel: ObservableObject {
     }
 
     func parseFromInputText() {
+        diagnosticsLogger.log("parseFromInputText length=\(inputText.count)")
         do {
             errorMessage = nil
             let result = try parserService.parseParagraph(text: inputText, sourceApp: "AliceMenuBar")
@@ -97,13 +211,16 @@ final class AliceMenuBarViewModel: ObservableObject {
                 sourceApp: "AliceMenuBar",
                 at: cursorPoint()
             )
+            diagnosticsLogger.log("parseFromInputText success sentences=\(result.sentences.count) latencyMs=\(result.totalLatencyMs)")
         } catch {
             parseResult = nil
             errorMessage = error.localizedDescription
+            diagnosticsLogger.log("parseFromInputText failed error=\(error.localizedDescription)")
         }
     }
 
-    func captureAndParseNow() {
+    func captureAndParseNow(trigger: String = "manual") {
+        diagnosticsLogger.log("captureAndParseNow trigger=\(trigger)")
         let request = CaptureTextRequest(
             sourceApp: NSWorkspace.shared.frontmostApplication?.localizedName ?? "UnknownApp",
             cursorPoint: cursorPoint(),
@@ -124,10 +241,31 @@ final class AliceMenuBarViewModel: ObservableObject {
                 sourceApp: request.sourceApp,
                 at: request.cursorPoint
             )
+            diagnosticsLogger.log(
+                "captureAndParseNow success trigger=\(trigger) sourceApp=\(request.sourceApp) " +
+                "captureMethod=\(result.capture.method.rawValue) textLength=\(result.capture.rawText.count) " +
+                "sentences=\(result.parse.sentences.count)"
+            )
         } catch {
             parseResult = nil
             errorMessage = error.localizedDescription
+            diagnosticsLogger.log("captureAndParseNow failed trigger=\(trigger) error=\(error.localizedDescription)")
         }
+    }
+
+    private func recordShortcutMatch() {
+        lastShortcutMatchAt = Date()
+        diagnosticsLogger.log("shortcut matched at \(display(lastShortcutMatchAt))")
+    }
+
+    private func handleMonitorDiagnostics(_ message: String) {
+        lastMonitorEvent = message
+        diagnosticsLogger.log("monitor \(message)")
+    }
+
+    private func display(_ date: Date?) -> String {
+        guard let date else { return "none" }
+        return ISO8601DateFormatter().string(from: date)
     }
 
     private func cursorPoint() -> CursorPoint {
@@ -139,6 +277,7 @@ final class AliceMenuBarViewModel: ObservableObject {
         let normalized = updatedConfiguration.normalized()
         guard normalized != shortcutConfiguration else { return }
 
+        diagnosticsLogger.log("shortcut updated from \(shortcutConfiguration.displayString) to \(normalized.displayString)")
         shortcutConfiguration = normalized
         shortcutSettingsStore.save(normalized)
         restartShortcutMonitoringIfNeeded()
@@ -146,8 +285,10 @@ final class AliceMenuBarViewModel: ObservableObject {
 
     private func restartShortcutMonitoringIfNeeded() {
         guard hasStartedShortcutMonitoring else { return }
+        diagnosticsLogger.log("restartShortcutMonitoringIfNeeded")
         shortcutMonitor?.stop()
         shortcutMonitor = nil
+        isShortcutMonitorRunning = false
         hasStartedShortcutMonitoring = false
         startShortcutMonitoringIfNeeded()
     }
@@ -176,7 +317,7 @@ struct ContentView: View {
 
             HStack(spacing: 8) {
                 Button("Capture + Parse (\(viewModel.shortcutConfiguration.displayString))") {
-                    viewModel.captureAndParseNow()
+                    viewModel.captureAndParseNow(trigger: "manual-button")
                 }
                 .buttonStyle(.borderedProminent)
 
@@ -197,6 +338,18 @@ struct ContentView: View {
                     openSettings()
                 }
                 .buttonStyle(.borderless)
+            }
+
+            if !viewModel.isAccessibilityTrusted {
+                HStack(spacing: 8) {
+                    Text("Accessibility permission missing, global shortcut may not work.")
+                        .font(.caption)
+                        .foregroundStyle(.orange)
+                    Button("Grant...") {
+                        viewModel.openAccessibilitySettings()
+                    }
+                    .buttonStyle(.borderless)
+                }
             }
 
             if let method = viewModel.lastCaptureMethod {
@@ -245,6 +398,7 @@ struct ContentView: View {
         .padding(14)
         .onAppear {
             viewModel.startShortcutMonitoringIfNeeded()
+            viewModel.markMainPanelAppeared()
         }
     }
 
@@ -257,32 +411,72 @@ struct ShortcutSettingsView: View {
     @ObservedObject var viewModel: AliceMenuBarViewModel
 
     var body: some View {
-        GroupBox("Shortcut Settings") {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Text("Key")
-                    Picker("Key", selection: keyBinding) {
-                        ForEach(ShortcutKey.allCases) { key in
-                            Text(key.label).tag(key)
+        VStack(alignment: .leading, spacing: 12) {
+            GroupBox("Shortcut Settings") {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Text("Key")
+                        Picker("Key", selection: keyBinding) {
+                            ForEach(ShortcutKey.allCases) { key in
+                                Text(key.label).tag(key)
+                            }
+                        }
+                        .labelsHidden()
+                        .frame(width: 100)
+                    }
+
+                    HStack(spacing: 12) {
+                        Toggle("Cmd", isOn: commandBinding)
+                        Toggle("Option", isOn: optionBinding)
+                        Toggle("Ctrl", isOn: controlBinding)
+                        Toggle("Shift", isOn: shiftBinding)
+                    }
+                    .toggleStyle(.checkbox)
+
+                    Text("Current: \(viewModel.shortcutConfiguration.displayString)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.top, 2)
+            }
+
+            GroupBox("Diagnostics") {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Accessibility Trusted: \(viewModel.isAccessibilityTrusted ? "Yes" : "No")")
+                        .font(.caption)
+                    Text("Shortcut Monitor Running: \(viewModel.isShortcutMonitorRunning ? "Yes" : "No")")
+                        .font(.caption)
+                    Text("Last Shortcut Match: \(displayDate(viewModel.lastShortcutMatchAt))")
+                        .font(.caption)
+                    Text("Last Monitor Event: \(viewModel.lastMonitorEvent)")
+                        .font(.caption)
+                        .lineLimit(3)
+                    Text("Log File: \(viewModel.diagnosticsLogPath)")
+                        .font(.caption2)
+                        .textSelection(.enabled)
+
+                    HStack(spacing: 8) {
+                        Button("Refresh") {
+                            viewModel.refreshAccessibilityStatus()
+                        }
+                        Button("Open Accessibility...") {
+                            viewModel.openAccessibilitySettings()
+                        }
+                        Button("Copy Diagnostics") {
+                            viewModel.copyDiagnosticsSummaryToPasteboard()
+                        }
+                        Button("Log Snapshot") {
+                            viewModel.logSnapshotForFeedback()
                         }
                     }
-                    .labelsHidden()
-                    .frame(width: 100)
+                    .buttonStyle(.bordered)
                 }
-
-                HStack(spacing: 12) {
-                    Toggle("Cmd", isOn: commandBinding)
-                    Toggle("Option", isOn: optionBinding)
-                    Toggle("Ctrl", isOn: controlBinding)
-                    Toggle("Shift", isOn: shiftBinding)
-                }
-                .toggleStyle(.checkbox)
-
-                Text("Current: \(viewModel.shortcutConfiguration.displayString)")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                .padding(.top, 2)
             }
-            .padding(.top, 2)
+        }
+        .onAppear {
+            viewModel.markSettingsAppeared()
+            viewModel.refreshAccessibilityStatus()
         }
     }
 
@@ -319,5 +513,10 @@ struct ShortcutSettingsView: View {
             get: { viewModel.shortcutConfiguration.shift },
             set: { viewModel.updateShiftModifier($0) }
         )
+    }
+
+    private func displayDate(_ date: Date?) -> String {
+        guard let date else { return "none" }
+        return ISO8601DateFormatter().string(from: date)
     }
 }
