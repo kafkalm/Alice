@@ -90,6 +90,9 @@ final class AliceMenuBarViewModel: ObservableObject {
 
         self.inputText = "The manager approved the revised budget yesterday. She sent the summary to the team."
         diagnosticsLogger.log("app initialized shortcut=\(shortcutConfiguration.displayString) accessibilityTrusted=\(isAccessibilityTrusted)")
+        if !isAccessibilityTrusted {
+            triggerAccessibilityPermissionPrompt(reason: "startup")
+        }
         startShortcutMonitoringIfNeeded()
     }
 
@@ -141,9 +144,13 @@ final class AliceMenuBarViewModel: ObservableObject {
     }
 
     func requestAccessibilityPermission() {
+        triggerAccessibilityPermissionPrompt(reason: "manual")
+    }
+
+    private func triggerAccessibilityPermissionPrompt(reason: String) {
         let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
         let trusted = AXIsProcessTrustedWithOptions(options)
-        diagnosticsLogger.log("requestAccessibilityPermission prompted trustedNow=\(trusted)")
+        diagnosticsLogger.log("requestAccessibilityPermission reason=\(reason) trustedNow=\(trusted)")
         refreshAccessibilityStatus()
     }
 
