@@ -397,15 +397,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = 5D91A526E75FA3E2AD0E45E5B69398858CA69460;
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = Z5Q22789T5;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kafkalm.alice.mac;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kafkalm.alice.dev;
 				PRODUCT_NAME = AliceMac;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 6.0;

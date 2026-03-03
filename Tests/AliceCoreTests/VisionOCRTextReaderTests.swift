@@ -25,6 +25,22 @@ private struct StubOCRRecognizer: OCRRecognizing {
     }
 }
 
+private final class SequenceOCRRecognizer {
+    private var outputs: [String?]
+    private var index = 0
+
+    init(outputs: [String?]) {
+        self.outputs = outputs
+    }
+
+    func recognize(_ image: CGImage) -> String? {
+        _ = image
+        guard index < outputs.count else { return outputs.last ?? nil }
+        defer { index += 1 }
+        return outputs[index]
+    }
+}
+
 final class VisionOCRTextReaderTests: XCTestCase {
     func testReturnsCapturedTextWithConfiguredBounds() {
         let capturer = StubScreenCapturer(image: Self.make1x1Image())
@@ -77,6 +93,31 @@ final class VisionOCRTextReaderTests: XCTestCase {
 
         let result = reader.readText(around: CursorPoint(x: 20, y: 20))
         XCTAssertNil(result)
+    }
+
+    func testPrefersFirstNearbyCandidateWhenItAlreadyHasReadableText() {
+        let capturer = StubScreenCapturer(image: Self.make1x1Image())
+        let recognizer = SequenceOCRRecognizer(outputs: [
+            "Near pointer text.",
+            "This sentence is much longer and would score higher, but it is from a larger far-reaching region."
+        ])
+
+        let reader = VisionOCRTextReader(
+            captureSize: CGSize(width: 220, height: 100),
+            additionalCaptureSizes: [CGSize(width: 900, height: 500)],
+            regionCapturer: { rect in
+                capturer.captureImage(in: rect)
+            },
+            recognizer: { image in
+                recognizer.recognize(image)
+            }
+        )
+
+        let result = reader.readText(around: CursorPoint(x: 300, y: 500))
+
+        XCTAssertEqual(result?.text, "Near pointer text.")
+        XCTAssertEqual(result?.bounds, RectBounds(x: 190, y: 450, width: 220, height: 100))
+        XCTAssertEqual(capturer.capturedRects.count, 1)
     }
 
     private static func make1x1Image() -> CGImage {

@@ -49,4 +49,24 @@ final class ShortcutSettingsStoreTests: XCTestCase {
             )
         )
     }
+
+    func testLoadReturnsOCRDebugFrameEnabledByDefault() {
+        let suiteName = "ShortcutSettingsStoreTests.\(#function)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+        let store = ShortcutSettingsStore(defaults: defaults)
+
+        XCTAssertTrue(store.loadOCRDebugFrameEnabled())
+    }
+
+    func testSaveAndLoadOCRDebugFrameEnabledRoundTrip() {
+        let suiteName = "ShortcutSettingsStoreTests.\(#function)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+        let store = ShortcutSettingsStore(defaults: defaults)
+
+        store.saveOCRDebugFrameEnabled(false)
+
+        XCTAssertFalse(store.loadOCRDebugFrameEnabled())
+    }
 }

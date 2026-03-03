@@ -93,6 +93,7 @@ struct ShortcutConfiguration: Equatable, Codable {
 final class ShortcutSettingsStore {
     private let defaults: UserDefaults
     private let storageKey = "alice.globalShortcut.configuration"
+    private let ocrDebugFrameEnabledKey = "alice.capture.ocrDebugFrameEnabled"
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -110,5 +111,16 @@ final class ShortcutSettingsStore {
         let normalized = configuration.normalized()
         guard let data = try? JSONEncoder().encode(normalized) else { return }
         defaults.set(data, forKey: storageKey)
+    }
+
+    func loadOCRDebugFrameEnabled() -> Bool {
+        guard defaults.object(forKey: ocrDebugFrameEnabledKey) != nil else {
+            return true
+        }
+        return defaults.bool(forKey: ocrDebugFrameEnabledKey)
+    }
+
+    func saveOCRDebugFrameEnabled(_ enabled: Bool) {
+        defaults.set(enabled, forKey: ocrDebugFrameEnabledKey)
     }
 }

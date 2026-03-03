@@ -1,14 +1,6 @@
 import XCTest
 @testable import AliceCore
 
-private struct StubAXReader: AccessibilityTextReading {
-    let output: CapturedText?
-
-    func readFocusedText() -> CapturedText? {
-        output
-    }
-}
-
 private struct StubOCRReader: OCRTextReading {
     let output: CapturedText?
 
@@ -27,30 +19,9 @@ private struct StubLanguageHintProvider: LanguageHintProviding {
     }
 }
 
-final class AccessibilityFirstTextCaptureProviderTests: XCTestCase {
-    func testReturnsAXResultWhenAvailable() throws {
-        let provider = AccessibilityFirstTextCaptureProvider(
-            axReader: StubAXReader(output: CapturedText(text: "The manager approved the budget.", bounds: nil)),
-            ocrReader: StubOCRReader(output: CapturedText(text: "ignored", bounds: nil)),
-            languageHintProvider: StubLanguageHintProvider(hint: .en)
-        )
-
-        let result = try provider.captureText(
-            request: CaptureTextRequest(
-                sourceApp: "Safari",
-                cursorPoint: CursorPoint(x: 10, y: 20),
-                timestamp: Date().timeIntervalSince1970
-            )
-        )
-
-        XCTAssertEqual(result.method, .ax)
-        XCTAssertEqual(result.rawText, "The manager approved the budget.")
-        XCTAssertEqual(result.languageHint, .en)
-    }
-
-    func testFallsBackToOCRWhenAXMissing() throws {
-        let provider = AccessibilityFirstTextCaptureProvider(
-            axReader: StubAXReader(output: nil),
+final class OCRTextCaptureProviderTests: XCTestCase {
+    func testReturnsOCRResultWhenTextAvailable() throws {
+        let provider = OCRTextCaptureProvider(
             ocrReader: StubOCRReader(output: CapturedText(text: "She sent the summary to the team.", bounds: RectBounds(x: 1, y: 2, width: 3, height: 4))),
             languageHintProvider: StubLanguageHintProvider(hint: .en)
         )
@@ -68,9 +39,26 @@ final class AccessibilityFirstTextCaptureProviderTests: XCTestCase {
         XCTAssertEqual(result.bounds, RectBounds(x: 1, y: 2, width: 3, height: 4))
     }
 
+    func testTrimsOCRResult() throws {
+        let provider = OCRTextCaptureProvider(
+            ocrReader: StubOCRReader(output: CapturedText(text: "  OCR text should be used.\n", bounds: nil)),
+            languageHintProvider: StubLanguageHintProvider(hint: .en)
+        )
+
+        let result = try provider.captureText(
+            request: CaptureTextRequest(
+                sourceApp: "Arc",
+                cursorPoint: CursorPoint(x: 10, y: 20),
+                timestamp: Date().timeIntervalSince1970
+            )
+        )
+
+        XCTAssertEqual(result.method, .ocr)
+        XCTAssertEqual(result.rawText, "OCR text should be used.")
+    }
+
     func testThrowsWhenNoTextDetected() {
-        let provider = AccessibilityFirstTextCaptureProvider(
-            axReader: StubAXReader(output: nil),
+        let provider = OCRTextCaptureProvider(
             ocrReader: StubOCRReader(output: nil),
             languageHintProvider: StubLanguageHintProvider(hint: .unknown)
         )

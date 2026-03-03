@@ -48,6 +48,8 @@ final class GlobalShortcutMonitor {
             }
             guard isMatch else { return }
             Task { @MainActor in
+                diagnostics?("global shortcut matched; delaying callback 120ms for focus stabilization")
+                try? await Task.sleep(nanoseconds: 120_000_000)
                 callback()
             }
         }
@@ -59,13 +61,14 @@ final class GlobalShortcutMonitor {
                 diagnostics?(message)
             }
             guard isMatch else { return event }
-            Task { @MainActor in
-                callback()
-            }
+            diagnostics?("local shortcut match ignored to avoid self-capture; waiting for global keyDown")
             return event
         }
 
-        notifyDiagnostics("start() completed running=\(isRunning)")
+        notifyDiagnostics(
+            "start() completed running=\(isRunning) " +
+            "globalInstalled=\(globalMonitorToken != nil) localInstalled=\(localMonitorToken != nil)"
+        )
     }
 
     func stop() {
