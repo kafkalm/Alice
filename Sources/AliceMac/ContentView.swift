@@ -67,7 +67,7 @@ final class AliceMenuBarViewModel: ObservableObject {
     private var hasStartedShortcutMonitoring = false
 
     init(
-        captureProvider: TextCaptureProviding = AccessibilityFirstTextCaptureProvider(),
+        captureProvider: TextCaptureProviding? = nil,
         floatingPresenter: FloatingResultPresenting = FloatingResultWindowManager(),
         shortcutSettingsStore: ShortcutSettingsStore = ShortcutSettingsStore()
     ) {
@@ -85,7 +85,15 @@ final class AliceMenuBarViewModel: ObservableObject {
             eventLogger: LocalEventLogger(),
             settings: QuickSVOSettings(cloudFallbackEnabled: true, confidenceThreshold: 0.55)
         )
-        self.captureRunner = QuickSVOCaptureRunner(captureProvider: captureProvider, paragraphParser: parserService)
+
+        let resolvedCaptureProvider = captureProvider ?? AccessibilityFirstTextCaptureProvider(
+            diagnostics: { [weak diagnosticsLogger] message in
+                Task { @MainActor in
+                    diagnosticsLogger?.log("capture \(message)")
+                }
+            }
+        )
+        self.captureRunner = QuickSVOCaptureRunner(captureProvider: resolvedCaptureProvider, paragraphParser: parserService)
         self.floatingPresenter = floatingPresenter
 
         self.inputText = "The manager approved the revised budget yesterday. She sent the summary to the team."

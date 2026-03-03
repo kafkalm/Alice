@@ -2,43 +2,74 @@ import ApplicationServices
 import Foundation
 
 public struct AXFocusedTextReader: AccessibilityTextReading {
-    public init() {}
+    public typealias DiagnosticsHandler = @Sendable (String) -> Void
+
+    private let diagnostics: DiagnosticsHandler?
+
+    public init(diagnostics: DiagnosticsHandler? = nil) {
+        self.diagnostics = diagnostics
+    }
 
     public func readFocusedText() -> CapturedText? {
         let systemWide = AXUIElementCreateSystemWide()
 
-        guard let focused = copyAXElement(from: systemWide, attribute: kAXFocusedUIElementAttribute as CFString) else {
+        guard let focused = copyAXElement(from: systemWide, attribute: kAXFocusedUIElementAttribute as CFString, label: "focusedUIElement") else {
+            diagnostics?("AX read failed: focused UI element unavailable")
             return nil
         }
 
-        if let selectedText = copyString(from: focused, attribute: kAXSelectedTextAttribute as CFString),
-           !selectedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return CapturedText(text: selectedText, bounds: copyBounds(from: focused))
+        if let selectedText = copyString(from: focused, attribute: kAXSelectedTextAttribute as CFString, label: "selectedText") {
+            let normalized = selectedText.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !normalized.isEmpty {
+                diagnostics?("AX selectedText captured length=\(normalized.count)")
+                return CapturedText(text: selectedText, bounds: copyBounds(from: focused))
+            }
+            diagnostics?("AX selectedText present but empty after trim")
         }
 
-        if let valueText = copyString(from: focused, attribute: kAXValueAttribute as CFString),
-           !valueText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return CapturedText(text: valueText, bounds: copyBounds(from: focused))
+        if let valueText = copyString(from: focused, attribute: kAXValueAttribute as CFString, label: "valueText") {
+            let normalized = valueText.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !normalized.isEmpty {
+                diagnostics?("AX valueText captured length=\(normalized.count)")
+                return CapturedText(text: valueText, bounds: copyBounds(from: focused))
+            }
+            diagnostics?("AX valueText present but empty after trim")
         }
 
+        diagnostics?("AX read produced no usable text")
         return nil
     }
 
-    private func copyAXElement(from element: AXUIElement, attribute: CFString) -> AXUIElement? {
+    private func copyAXElement(from element: AXUIElement, attribute: CFString, label: String) -> AXUIElement? {
         var value: CFTypeRef?
         let status = AXUIElementCopyAttributeValue(element, attribute, &value)
-        guard status == .success else { return nil }
-        return value as! AXUIElement?
+        guard status == .success else {
+            diagnostics?("AX attribute \(label) status=\(status.rawValue)")
+            return nil
+        }
+        guard let value else {
+            diagnostics?("AX attribute \(label) returned nil")
+            return nil
+        }
+        guard CFGetTypeID(value) == AXUIElementGetTypeID() else {
+            diagnostics?("AX attribute \(label) type mismatch")
+            return nil
+        }
+        return (value as! AXUIElement)
     }
 
-    private func copyString(from element: AXUIElement, attribute: CFString) -> String? {
+    private func copyString(from element: AXUIElement, attribute: CFString, label: String) -> String? {
         var value: CFTypeRef?
         let status = AXUIElementCopyAttributeValue(element, attribute, &value)
-        guard status == .success else { return nil }
+        guard status == .success else {
+            diagnostics?("AX attribute \(label) status=\(status.rawValue)")
+            return nil
+        }
 
         if let result = value as? String {
             return result
         }
+        diagnostics?("AX attribute \(label) non-string value")
         return nil
     }
 
