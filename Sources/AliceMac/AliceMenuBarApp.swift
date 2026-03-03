@@ -11,5 +11,11 @@ struct AliceMenuBarApp: App {
                 .frame(width: 420, height: 480)
         }
         .menuBarExtraStyle(.window)
+
+        Settings {
+            ShortcutSettingsView(viewModel: viewModel)
+                .frame(minWidth: 680, minHeight: 500)
+                .padding(16)
+        }
     }
 }

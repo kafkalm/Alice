@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0DFA3F536333A9DE449E13B2 /* NLTokenizerSentenceSplitterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8718903F6955616F3A0EA9AF /* NLTokenizerSentenceSplitterTests.swift */; };
 		213B83D54AC2FDC536B91795 /* AliceMenuBarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0F32B1044601C995D84EC0D /* AliceMenuBarApp.swift */; };
+		24CF4884F6DC607E5A819CF4 /* ShortcutConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59B14C337F33D6301C3A7A4 /* ShortcutConfiguration.swift */; };
 		2C218E8182845F47925400E3 /* ScreenCaptureKitRegionCapturerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F122F6F23E93264946748BC3 /* ScreenCaptureKitRegionCapturerTests.swift */; };
 		3153EFCBC0FEE04B41C998B7 /* QuickSVOCaptureRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F163715343517F4CD02BA1 /* QuickSVOCaptureRunnerTests.swift */; };
 		58BD30E3D841C881DA361DDB /* AliceCore in Frameworks */ = {isa = PBXBuildFile; productRef = A9EBD883C6ABCD132F20FC05 /* AliceCore */; };
@@ -35,6 +36,7 @@
 		B0F9C3D72CA2E374FF439490 /* GlobalShortcutMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalShortcutMonitor.swift; sourceTree = "<group>"; };
 		BA10160AD431DAB2EDFF7E33 /* QuickSVOServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickSVOServiceTests.swift; sourceTree = "<group>"; };
 		C5DA806CCF71EA84B246E4A5 /* AliceCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AliceCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D59B14C337F33D6301C3A7A4 /* ShortcutConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutConfiguration.swift; sourceTree = "<group>"; };
 		F0F32B1044601C995D84EC0D /* AliceMenuBarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceMenuBarApp.swift; sourceTree = "<group>"; };
 		F122F6F23E93264946748BC3 /* ScreenCaptureKitRegionCapturerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCaptureKitRegionCapturerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -113,6 +115,7 @@
 				27FA019D210A18395502399F /* ContentView.swift */,
 				9482BB11CA0BAC96278E13E0 /* FloatingResultWindowManager.swift */,
 				B0F9C3D72CA2E374FF439490 /* GlobalShortcutMonitor.swift */,
+				D59B14C337F33D6301C3A7A4 /* ShortcutConfiguration.swift */,
 			);
 			path = AliceMac;
 			sourceTree = "<group>";
@@ -228,6 +231,7 @@
 				6BB012CD8BDD340A55649A31 /* ContentView.swift in Sources */,
 				A15C26982CECD7ACE5E23DCE /* FloatingResultWindowManager.swift in Sources */,
 				A6C5ED6A62901C1EAFB51137 /* GlobalShortcutMonitor.swift in Sources */,
+				24CF4884F6DC607E5A819CF4 /* ShortcutConfiguration.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -393,15 +397,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = 5D91A526E75FA3E2AD0E45E5B69398858CA69460;
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = Z5Q22789T5;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kafkalm.alice.mac;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kafkalm.alice.dev;
 				PRODUCT_NAME = AliceMac;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 6.0;

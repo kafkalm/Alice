@@ -21,6 +21,10 @@ let package = Package(
         .testTarget(
             name: "AliceCoreTests",
             dependencies: ["AliceCore"]
+        ),
+        .testTarget(
+            name: "AliceMacTests",
+            dependencies: ["AliceMac"]
         )
     ]
 )

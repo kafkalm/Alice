@@ -49,7 +49,7 @@ final class QuickSVOCaptureRunnerTests: XCTestCase {
 
         let runner = QuickSVOCaptureRunner(
             captureProvider: StubCaptureProvider(
-                response: CaptureTextResponse(method: .ax, rawText: "The manager approved the budget.", languageHint: .en, bounds: nil)
+                response: CaptureTextResponse(method: .ocr, rawText: "The manager approved the budget.", languageHint: .en, bounds: nil)
             ),
             paragraphParser: parser
         )
@@ -62,7 +62,7 @@ final class QuickSVOCaptureRunnerTests: XCTestCase {
             )
         )
 
-        XCTAssertEqual(result.capture.method, .ax)
+        XCTAssertEqual(result.capture.method, .ocr)
         XCTAssertEqual(result.parse.sentences.count, 1)
         XCTAssertEqual(parser.requests.count, 1)
         XCTAssertEqual(parser.requests[0].text, "The manager approved the budget.")

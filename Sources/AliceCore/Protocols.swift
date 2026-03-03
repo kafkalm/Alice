@@ -5,10 +5,6 @@ public protocol TextCaptureProviding {
     func captureText(request: CaptureTextRequest) throws -> CaptureTextResponse
 }
 
-public protocol AccessibilityTextReading {
-    func readFocusedText() -> CapturedText?
-}
-
 public protocol OCRTextReading {
     func readText(around point: CursorPoint) -> CapturedText?
 }

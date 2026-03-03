@@ -35,7 +35,6 @@ public struct CapturedText: Codable, Equatable, Sendable {
 }
 
 public enum CaptureMethod: String, Codable, Equatable, Sendable {
-    case ax
     case ocr
 }
 

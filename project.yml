@@ -23,6 +23,12 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         CODE_SIGN_STYLE: Automatic
         MACOSX_DEPLOYMENT_TARGET: 14.0
+      configs:
+        Debug:
+          PRODUCT_BUNDLE_IDENTIFIER: com.kafkalm.alice.dev
+          CODE_SIGN_STYLE: Manual
+          CODE_SIGN_IDENTITY: 5D91A526E75FA3E2AD0E45E5B69398858CA69460
+          DEVELOPMENT_TEAM: Z5Q22789T5
   AliceCoreTests:
     type: bundle.unit-test
     platform: macOS
