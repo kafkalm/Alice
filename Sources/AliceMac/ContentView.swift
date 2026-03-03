@@ -63,19 +63,23 @@ final class AliceMenuBarViewModel: ObservableObject {
     private let floatingPresenter: FloatingResultPresenting
     private let shortcutSettingsStore: ShortcutSettingsStore
     private let diagnosticsLogger: AliceDiagnosticsLogger
+    private let defaults: UserDefaults
     private var shortcutMonitor: GlobalShortcutMonitor?
     private var hasStartedShortcutMonitoring = false
+    private let accessibilityAutoPromptKey = "alice.accessibility.autoPromptShown"
 
     init(
         captureProvider: TextCaptureProviding? = nil,
         floatingPresenter: FloatingResultPresenting = FloatingResultWindowManager(),
-        shortcutSettingsStore: ShortcutSettingsStore = ShortcutSettingsStore()
+        shortcutSettingsStore: ShortcutSettingsStore = ShortcutSettingsStore(),
+        defaults: UserDefaults = .standard
     ) {
         self.shortcutSettingsStore = shortcutSettingsStore
         self.shortcutConfiguration = shortcutSettingsStore.load()
         self.diagnosticsLogger = .shared
         self.diagnosticsLogPath = diagnosticsLogger.logFilePath
         self.isAccessibilityTrusted = AXIsProcessTrusted()
+        self.defaults = defaults
 
         let localParser = HeuristicSVOParser()
         self.parserService = QuickSVOService(
@@ -98,8 +102,11 @@ final class AliceMenuBarViewModel: ObservableObject {
 
         self.inputText = "The manager approved the revised budget yesterday. She sent the summary to the team."
         diagnosticsLogger.log("app initialized shortcut=\(shortcutConfiguration.displayString) accessibilityTrusted=\(isAccessibilityTrusted)")
-        if !isAccessibilityTrusted {
+        if !isAccessibilityTrusted, shouldAutoPromptAccessibilityPermission() {
             triggerAccessibilityPermissionPrompt(reason: "startup")
+            defaults.set(true, forKey: accessibilityAutoPromptKey)
+        } else if !isAccessibilityTrusted {
+            diagnosticsLogger.log("skip startup accessibility prompt: already prompted before")
         }
         startShortcutMonitoringIfNeeded()
     }
@@ -160,6 +167,10 @@ final class AliceMenuBarViewModel: ObservableObject {
         let trusted = AXIsProcessTrustedWithOptions(options)
         diagnosticsLogger.log("requestAccessibilityPermission reason=\(reason) trustedNow=\(trusted)")
         refreshAccessibilityStatus()
+    }
+
+    private func shouldAutoPromptAccessibilityPermission() -> Bool {
+        !defaults.bool(forKey: accessibilityAutoPromptKey)
     }
 
     func copyDiagnosticsSummaryToPasteboard() {
