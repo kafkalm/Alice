@@ -1,6 +1,6 @@
 import AliceCore
 import AppKit
-import ApplicationServices
+@preconcurrency import ApplicationServices
 import SwiftUI
 
 @MainActor
@@ -90,6 +90,7 @@ final class AliceMenuBarViewModel: ObservableObject {
 
         self.inputText = "The manager approved the revised budget yesterday. She sent the summary to the team."
         diagnosticsLogger.log("app initialized shortcut=\(shortcutConfiguration.displayString) accessibilityTrusted=\(isAccessibilityTrusted)")
+        startShortcutMonitoringIfNeeded()
     }
 
     func startShortcutMonitoringIfNeeded() {
@@ -121,7 +122,8 @@ final class AliceMenuBarViewModel: ObservableObject {
         }
         monitor.start()
         self.shortcutMonitor = monitor
-        isShortcutMonitorRunning = true
+        isShortcutMonitorRunning = monitor.isRunning
+        diagnosticsLogger.log("shortcut monitor running=\(isShortcutMonitorRunning)")
     }
 
     func refreshAccessibilityStatus() {
@@ -136,6 +138,13 @@ final class AliceMenuBarViewModel: ObservableObject {
         }
         diagnosticsLogger.log("openAccessibilitySettings requested")
         NSWorkspace.shared.open(url)
+    }
+
+    func requestAccessibilityPermission() {
+        let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
+        let trusted = AXIsProcessTrustedWithOptions(options)
+        diagnosticsLogger.log("requestAccessibilityPermission prompted trustedNow=\(trusted)")
+        refreshAccessibilityStatus()
     }
 
     func copyDiagnosticsSummaryToPasteboard() {
@@ -346,7 +355,7 @@ struct ContentView: View {
                         .font(.caption)
                         .foregroundStyle(.orange)
                     Button("Grant...") {
-                        viewModel.openAccessibilitySettings()
+                        viewModel.requestAccessibilityPermission()
                     }
                     .buttonStyle(.borderless)
                 }
@@ -461,6 +470,9 @@ struct ShortcutSettingsView: View {
                         }
                         Button("Open Accessibility...") {
                             viewModel.openAccessibilitySettings()
+                        }
+                        Button("Request Permission") {
+                            viewModel.requestAccessibilityPermission()
                         }
                         Button("Copy Diagnostics") {
                             viewModel.copyDiagnosticsSummaryToPasteboard()

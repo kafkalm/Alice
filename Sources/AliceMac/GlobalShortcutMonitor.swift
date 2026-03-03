@@ -11,6 +11,10 @@ final class GlobalShortcutMonitor {
     private var globalMonitorToken: Any?
     private var localMonitorToken: Any?
 
+    var isRunning: Bool {
+        globalMonitorToken != nil || localMonitorToken != nil
+    }
+
     init(
         keyCode: UInt16 = 0,
         modifiers: NSEvent.ModifierFlags = [.command, .shift],
@@ -60,6 +64,8 @@ final class GlobalShortcutMonitor {
             }
             return event
         }
+
+        notifyDiagnostics("start() completed running=\(isRunning)")
     }
 
     func stop() {
