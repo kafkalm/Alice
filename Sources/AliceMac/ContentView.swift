@@ -9,17 +9,23 @@ final class AliceMenuBarViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var lastCaptureMethod: CaptureMethod?
     @Published var lastLanguageHint: LanguageHint?
+    @Published var shortcutConfiguration: ShortcutConfiguration
 
     private let parserService: QuickSVOService
     private let captureRunner: QuickSVOCaptureRunner
     private let floatingPresenter: FloatingResultPresenting
+    private let shortcutSettingsStore: ShortcutSettingsStore
     private var shortcutMonitor: GlobalShortcutMonitor?
     private var hasStartedShortcutMonitoring = false
 
     init(
         captureProvider: TextCaptureProviding = AccessibilityFirstTextCaptureProvider(),
-        floatingPresenter: FloatingResultPresenting = FloatingResultWindowManager()
+        floatingPresenter: FloatingResultPresenting = FloatingResultWindowManager(),
+        shortcutSettingsStore: ShortcutSettingsStore = ShortcutSettingsStore()
     ) {
+        self.shortcutSettingsStore = shortcutSettingsStore
+        self.shortcutConfiguration = shortcutSettingsStore.load()
+
         let localParser = HeuristicSVOParser()
         self.parserService = QuickSVOService(
             sentenceSplitter: NLTokenizerSentenceSplitter(),
@@ -38,11 +44,45 @@ final class AliceMenuBarViewModel: ObservableObject {
         guard !hasStartedShortcutMonitoring else { return }
         hasStartedShortcutMonitoring = true
 
-        let monitor = GlobalShortcutMonitor { [weak self] in
+        let currentShortcut = shortcutConfiguration.normalized()
+        let monitor = GlobalShortcutMonitor(
+            keyCode: currentShortcut.key.keyCode,
+            modifiers: currentShortcut.modifierFlags
+        ) { [weak self] in
             self?.captureAndParseNow()
         }
         monitor.start()
         self.shortcutMonitor = monitor
+    }
+
+    func updateShortcutKey(_ key: ShortcutKey) {
+        var updated = shortcutConfiguration
+        updated.key = key
+        applyShortcutConfiguration(updated)
+    }
+
+    func updateCommandModifier(_ enabled: Bool) {
+        var updated = shortcutConfiguration
+        updated.command = enabled
+        applyShortcutConfiguration(updated)
+    }
+
+    func updateOptionModifier(_ enabled: Bool) {
+        var updated = shortcutConfiguration
+        updated.option = enabled
+        applyShortcutConfiguration(updated)
+    }
+
+    func updateControlModifier(_ enabled: Bool) {
+        var updated = shortcutConfiguration
+        updated.control = enabled
+        applyShortcutConfiguration(updated)
+    }
+
+    func updateShiftModifier(_ enabled: Bool) {
+        var updated = shortcutConfiguration
+        updated.shift = enabled
+        applyShortcutConfiguration(updated)
     }
 
     func parseFromInputText() {
@@ -94,6 +134,23 @@ final class AliceMenuBarViewModel: ObservableObject {
         let location = NSEvent.mouseLocation
         return CursorPoint(x: location.x, y: location.y)
     }
+
+    private func applyShortcutConfiguration(_ updatedConfiguration: ShortcutConfiguration) {
+        let normalized = updatedConfiguration.normalized()
+        guard normalized != shortcutConfiguration else { return }
+
+        shortcutConfiguration = normalized
+        shortcutSettingsStore.save(normalized)
+        restartShortcutMonitoringIfNeeded()
+    }
+
+    private func restartShortcutMonitoringIfNeeded() {
+        guard hasStartedShortcutMonitoring else { return }
+        shortcutMonitor?.stop()
+        shortcutMonitor = nil
+        hasStartedShortcutMonitoring = false
+        startShortcutMonitoringIfNeeded()
+    }
 }
 
 struct ContentView: View {
@@ -104,7 +161,7 @@ struct ContentView: View {
             Text("Quick SVO Parse")
                 .font(.headline)
 
-            Text("Hover text in any app and press Cmd+Shift+A, or manually parse below.")
+            Text("Hover text in any app and press \(viewModel.shortcutConfiguration.displayString), or manually parse below.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
@@ -117,7 +174,7 @@ struct ContentView: View {
                 )
 
             HStack(spacing: 8) {
-                Button("Capture + Parse (Cmd+Shift+A)") {
+                Button("Capture + Parse (\(viewModel.shortcutConfiguration.displayString))") {
                     viewModel.captureAndParseNow()
                 }
                 .buttonStyle(.borderedProminent)
@@ -126,6 +183,34 @@ struct ContentView: View {
                     viewModel.parseFromInputText()
                 }
                 .buttonStyle(.bordered)
+            }
+
+            GroupBox("Shortcut Settings") {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Key")
+                        Picker("Key", selection: keyBinding) {
+                            ForEach(ShortcutKey.allCases) { key in
+                                Text(key.label).tag(key)
+                            }
+                        }
+                        .labelsHidden()
+                        .frame(width: 90)
+                    }
+
+                    HStack(spacing: 12) {
+                        Toggle("Cmd", isOn: commandBinding)
+                        Toggle("Option", isOn: optionBinding)
+                        Toggle("Ctrl", isOn: controlBinding)
+                        Toggle("Shift", isOn: shiftBinding)
+                    }
+                    .toggleStyle(.checkbox)
+
+                    Text("Current: \(viewModel.shortcutConfiguration.displayString)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.top, 2)
             }
 
             if let method = viewModel.lastCaptureMethod {
@@ -179,5 +264,40 @@ struct ContentView: View {
 
     private func emptyFallback(_ value: String) -> String {
         value.isEmpty ? "(none)" : value
+    }
+
+    private var keyBinding: Binding<ShortcutKey> {
+        Binding(
+            get: { viewModel.shortcutConfiguration.key },
+            set: { viewModel.updateShortcutKey($0) }
+        )
+    }
+
+    private var commandBinding: Binding<Bool> {
+        Binding(
+            get: { viewModel.shortcutConfiguration.command },
+            set: { viewModel.updateCommandModifier($0) }
+        )
+    }
+
+    private var optionBinding: Binding<Bool> {
+        Binding(
+            get: { viewModel.shortcutConfiguration.option },
+            set: { viewModel.updateOptionModifier($0) }
+        )
+    }
+
+    private var controlBinding: Binding<Bool> {
+        Binding(
+            get: { viewModel.shortcutConfiguration.control },
+            set: { viewModel.updateControlModifier($0) }
+        )
+    }
+
+    private var shiftBinding: Binding<Bool> {
+        Binding(
+            get: { viewModel.shortcutConfiguration.shift },
+            set: { viewModel.updateShiftModifier($0) }
+        )
     }
 }

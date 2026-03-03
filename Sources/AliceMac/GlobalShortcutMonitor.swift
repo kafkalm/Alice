@@ -57,7 +57,12 @@ final class GlobalShortcutMonitor {
     }
 
     private static func matchesShortcut(_ event: NSEvent, keyCode: UInt16, modifiers: NSEvent.ModifierFlags) -> Bool {
-        let normalized = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
-        return event.keyCode == keyCode && normalized.contains(modifiers)
+        let relevantModifiers: NSEvent.ModifierFlags = [.command, .option, .control, .shift]
+        let normalized = event.modifierFlags
+            .intersection(.deviceIndependentFlagsMask)
+            .intersection(relevantModifiers)
+        let expected = modifiers.intersection(relevantModifiers)
+
+        return event.keyCode == keyCode && normalized == expected
     }
 }
