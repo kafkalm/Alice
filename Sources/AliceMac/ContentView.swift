@@ -154,6 +154,7 @@ final class AliceMenuBarViewModel: ObservableObject {
 }
 
 struct ContentView: View {
+    @Environment(\.openSettings) private var openSettings
     @ObservedObject var viewModel: AliceMenuBarViewModel
 
     var body: some View {
@@ -185,32 +186,17 @@ struct ContentView: View {
                 .buttonStyle(.bordered)
             }
 
-            GroupBox("Shortcut Settings") {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("Key")
-                        Picker("Key", selection: keyBinding) {
-                            ForEach(ShortcutKey.allCases) { key in
-                                Text(key.label).tag(key)
-                            }
-                        }
-                        .labelsHidden()
-                        .frame(width: 90)
-                    }
+            HStack {
+                Text("Shortcut: \(viewModel.shortcutConfiguration.displayString)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
 
-                    HStack(spacing: 12) {
-                        Toggle("Cmd", isOn: commandBinding)
-                        Toggle("Option", isOn: optionBinding)
-                        Toggle("Ctrl", isOn: controlBinding)
-                        Toggle("Shift", isOn: shiftBinding)
-                    }
-                    .toggleStyle(.checkbox)
+                Spacer(minLength: 12)
 
-                    Text("Current: \(viewModel.shortcutConfiguration.displayString)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                Button("Open Shortcut Settings...") {
+                    openSettings()
                 }
-                .padding(.top, 2)
+                .buttonStyle(.borderless)
             }
 
             if let method = viewModel.lastCaptureMethod {
@@ -264,6 +250,40 @@ struct ContentView: View {
 
     private func emptyFallback(_ value: String) -> String {
         value.isEmpty ? "(none)" : value
+    }
+}
+
+struct ShortcutSettingsView: View {
+    @ObservedObject var viewModel: AliceMenuBarViewModel
+
+    var body: some View {
+        GroupBox("Shortcut Settings") {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("Key")
+                    Picker("Key", selection: keyBinding) {
+                        ForEach(ShortcutKey.allCases) { key in
+                            Text(key.label).tag(key)
+                        }
+                    }
+                    .labelsHidden()
+                    .frame(width: 100)
+                }
+
+                HStack(spacing: 12) {
+                    Toggle("Cmd", isOn: commandBinding)
+                    Toggle("Option", isOn: optionBinding)
+                    Toggle("Ctrl", isOn: controlBinding)
+                    Toggle("Shift", isOn: shiftBinding)
+                }
+                .toggleStyle(.checkbox)
+
+                Text("Current: \(viewModel.shortcutConfiguration.displayString)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.top, 2)
+        }
     }
 
     private var keyBinding: Binding<ShortcutKey> {
